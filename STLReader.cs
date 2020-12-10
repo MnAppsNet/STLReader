@@ -19,14 +19,15 @@ class STLReader
 
     public STLReader(string filePath) //Constructor
     {
-        if (fileStream != null && file != null ) {
-            fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-            file = new BinaryReader(fileStream);
-        }
+        fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+        file = new BinaryReader(fileStream);
     }
 
-    public void ReadSTL()
+    public bool ReadSTL() //If the file is read successfully returns true
     {
+        if (fileStream == null || file == null)
+            return false;
+
         header = null;
         triangle_number = 0;
         triangles = null;
@@ -51,6 +52,7 @@ class STLReader
                 UInt16 attr_byte_count = file.ReadUInt16(); //16-bit integer - attribute byte count, never used
         }
         DisposeFile();
+        return true;
     }
 
     public void DisposeFile() //Dispose stream and release the file
