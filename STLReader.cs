@@ -35,21 +35,20 @@ class STLReader
         triangle_number = file.ReadUInt32(); //1 32-bit unassigned integer
 
 
-        int j = 0;
+        triangles = new float[triangle_number][,];
         for (int i = 0; i < triangle_number; i++)
         {
-
-                                                 // X1 Y1 Z1  <-- Point 1 \
-            float[,] triangle = new float[3, 3]; // X2 Y2 Z2  <-- Point 2  = > One Triangle
-                                                 // X3 Y3 Z3  <-- Point 3 /
+            ////                            // X1 Y1 Z1  <-- Point 1 \
+            triangles[i] = new float[3, 3]; // X2 Y2 Z2  <-- Point 2  = > One Triangle
+            ////                            // X3 Y3 Z3  <-- Point 3 /
 
             //Get the 3 triangle points :
             for (int ix = 0; ix < 3; ix++) //For each point
                 for (int iy = 0; iy < 3; iy++) //For each dimension
                 {
-                        triangle[ix, iy] = System.BitConverter.ToSingle(file.ReadBytes(4), 0); // 4 byte - 32 bit float number
+                    triangles[i][ix, iy] = System.BitConverter.ToSingle(file.ReadBytes(4), 0); // 4 byte - 32 bit float number
                 }
-            UInt16 attr_byte_count = file.ReadUInt16(); //16-bit integer - attribute byte count, never used
+                UInt16 attr_byte_count = file.ReadUInt16(); //16-bit integer - attribute byte count, never used
         }
         DisposeFile();
     }
