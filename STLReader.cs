@@ -17,10 +17,18 @@ class STLReader
         return triangles;
     }
 
-    public STLReader(string filePath) //Constructor
+    public STLReader(string filePath = "") //Constructor
     {
-        fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-        file = new BinaryReader(fileStream);
+        if ( filePath != "" )
+            LoadFile(filePath);
+    }
+
+    public void LoadFile(string filePath)
+    {
+        if (File.Exists(filePath)){
+            fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            file = new BinaryReader(fileStream);
+        }
     }
 
     public bool ReadSTL() //If the file is read successfully returns true
@@ -32,26 +40,32 @@ class STLReader
         triangle_number = 0;
         triangles = null;
 
-        header = Encoding.UTF8.GetString(file.ReadBytes(80)); //80 8-bit chars
-        triangle_number = file.ReadUInt32(); //1 32-bit unassigned integer
-
-
-        triangles = new float[triangle_number][,];
-        for (int i = 0; i < triangle_number; i++)
+        try
         {
-            ////                            // X1 Y1 Z1  <-- Point 1 \
-            triangles[i] = new float[3, 3]; // X2 Y2 Z2  <-- Point 2  = > One Triangle
-            ////                            // X3 Y3 Z3  <-- Point 3 /
+            header = Encoding.UTF8.GetString(file.ReadBytes(80)); //80 8-bit chars
+            triangle_number = file.ReadUInt32(); //1 32-bit unassigned integer
 
-            //Get the 3 triangle points :
-            for (int ix = 0; ix < 3; ix++) //For each point
-                for (int iy = 0; iy < 3; iy++) //For each dimension
-                {
-                    triangles[i][ix, iy] = System.BitConverter.ToSingle(file.ReadBytes(4), 0); // 4 byte - 32 bit float number
-                }
-                UInt16 attr_byte_count = file.ReadUInt16(); //16-bit integer - attribute byte count, never used
+
+            triangles = new float[triangle_number][,];
+            for (int i = 0; i < triangle_number; i++)
+            {
+                ////                            // X1 Y1 Z1  <-- Point 1 \
+                triangles[i] = new float[3, 3]; // X2 Y2 Z2  <-- Point 2  = > One Triangle
+                ////                            // X3 Y3 Z3  <-- Point 3 /
+
+                //Get the 3 triangle points :
+                for (int ix = 0; ix < 3; ix++) //For each point
+                    for (int iy = 0; iy < 3; iy++) //For each dimension
+                    {
+                        triangles[i][ix, iy] = System.BitConverter.ToSingle(file.ReadBytes(4), 0); // 4 byte - 32 bit float number
+                    }
+                    UInt16 attr_byte_count = file.ReadUInt16(); //16-bit integer - attribute byte count, never used
+            }
+            DisposeFile();
+        catch
+        {
+            return false;
         }
-        DisposeFile();
         return true;
     }
 
