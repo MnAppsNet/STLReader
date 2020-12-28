@@ -10,7 +10,7 @@ class STLReader
     private float[][,] triangles;
 
     //Get file contents :
-    public float[][,] GetHeader(){
+    public string GetHeader(){
         return header;
     }
     public float[][,] GetTriangles(){
@@ -62,6 +62,7 @@ class STLReader
                     UInt16 attr_byte_count = file.ReadUInt16(); //16-bit integer - attribute byte count, never used
             }
             DisposeFile();
+        }
         catch
         {
             return false;
